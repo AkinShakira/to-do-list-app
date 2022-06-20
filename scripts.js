@@ -7,11 +7,19 @@ let list = document.querySelector(".js-todo-list");
 // Render each item added to the To Do list
 function renderToDo(toDo) {
   
+  // To prevent the list from eing lost when page is refreshed 
+  localStorage.setItem("toDoListRef", JSON.stringify(toDoList));
+
   // select the current to do
   let item = document.querySelector(`[data-key='${toDo.id}']`);
 
   if (toDo.deleted) {
     // remove the item from the DOM
+
+    // this is to solve a bug where the empty state doesnt come back after all items are deleted
+    // I did not encounter this bug 
+    // if (toDoList.length === 0) list.innerHTML = "";
+
     item.remove();
     return;
   }
@@ -104,7 +112,7 @@ form.addEventListener('submit', event => {
 
 list.addEventListener('click', event => {
   if (event.target.classList.contains('js-tick')) {
-    
+
     const itemKey = event.target.parentElement.dataset.key;
 
     toggleDone(itemKey);
@@ -116,5 +124,14 @@ list.addEventListener('click', event => {
     }
 })
 
+document.addEventListener("DOMContentLoaded", () => {
+  const ref = localStorage.getItem("toDoListRef");
+  if (ref) {
+    toDoList = JSON.parse(ref);
+    toDoList.forEach((t) => {
+      renderToDo(t);
+    });
+  }
+});
 
 
